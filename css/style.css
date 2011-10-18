@@ -1,0 +1,107 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	color: #FFF;
+	font: 0.75em 'Lucida Grande',sans-serif;
+	text-align: center;
+	background-color: #333;
+}
+
+#container {
+	margin: 1em auto;
+	padding: 5px 5px 5px 5px;
+	position: relative;
+	text-align: left;
+	width: 100%;
+	z-index: 1;
+}
+
+#map {
+	float: left;
+	/*width: 640px;*/
+	height: 500px;
+	margin: 0px 0px 15px 5px;
+	border: 2px solid black;
+}
+
+#search {
+	background-image: url('rangefindr-logo.png');
+	background-repeat: no-repeat;
+	float: left;
+	width: 300px;
+	padding-top: 50px;
+	margin: 0px 0px 15px 50px;
+}
+
+#search input, select {
+	margin: 5px 5px 5px 5px;
+}
+
+#search fieldset {
+	border: none;
+}
+
+.text {
+	display: block;
+}
+
+.text label {
+	float: left;
+	width: 90px;
+	text-align: right;
+}
+
+.text input, select {
+	float: right;
+	width: 150px;
+}
+
+#radius-selected {
+	margin-left: 3px;
+}
+
+.clear {
+	clear: both;
+}
+
+#showcall {
+	float: right;
+}
+#calltext {
+	color: #333;
+}
+
+#results {
+	clear: left;
+}
+
+.imglist {
+	display: inline;
+	list-style-type: none;
+}
+
+.photo {
+	border: 5px solid #666;
+}
+
+.photo:hover {
+	border: 5px solid white;
+}
+
+.markerimg img {
+	border: 5px solid #666;
+}
+
+.markerinfo {
+	color: #333;
+}
+.markerinfo a {
+	text-decoration: none;
+	color: #2786C2;
+}
+.markerinfo a:hover {
+	color: #F75342;
+}

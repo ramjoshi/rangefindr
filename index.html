@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>RangeFindr</title>
+	<link rel="stylesheet" href="css/style.css" />
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+	<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAFicygqKdztoY-g9DmDQjURSv7ZHZyxT01y__G7l_05sZYoVemBQz2oElWU1PhG7yvHiwu4t4ZeljMA&sensor=false" type="text/javascript"></script>
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript" src="js/fancybox/jquery.mousewheel-3.0.4.pack.js"></script>
+	<script type="text/javascript" src="js/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+	<script type="text/javascript" src="js/jquery.busy.js"></script>
+	<link rel="stylesheet" type="text/css" href="js/fancybox/jquery.fancybox-1.3.4.css" media="screen" />
+</head>
+<body onunload="GUnload()">
+	<div id="container">
+		<div id="map">
+		</div>
+		<div id="search">
+			<h2>Explore Flickr's best pictures near you or anywhere in the world!</h2><br/>
+			<form method="get">
+				<fieldset id="fields">
+					<div class="text">
+						<label for="text">Text</label>
+						<input type="text" id="text" placeholder="Free text search"/>
+						<div class="clear"></div>
+					</div>
+					<div class="text">
+						<label for="tags">Tags</label>	
+						<input type="text" id="tags" />
+						<div class="clear"></div>
+					</div>
+					<div class="text">
+						<label for="tagmode">Tag mode</label>	
+						<select id="tagmode">
+							<option value="any">Any</option>
+							<option value="all">All</option>
+						</select>	
+						<div class="clear"></div>
+					</div>
+					<div class="text">
+						<label for="license">License</label>
+						<select id="license">
+							<option value="0">Select</option>
+							<option value="1">Attribution-NonCommercial-ShareAlike</option>
+							<option value="2">Attribution-NonCommercial</option>
+							<option value="3">Attribution-NonCommercial-NoDerivs</option>
+							<option value="4">Attribution</option>
+							<option value="5">Attribution-ShareAlike</option>
+							<option value="6">Attribution-NoDerivs</option>
+							<option value="7">No known copyright</option>
+						</select><br/>
+						<div class="clear"></div>
+					</div>
+					<div class="text">
+						<label for="sort">Sort</label>
+						<select id="sort">
+							<option value="interestingness-desc">Most Interesting</option>
+							<option value="relevance">Most Relevant</option>
+							<option value="radial">Radially Outward</option>
+							<option value="date-posted-desc">Newest</option>
+							<option value="date-posted-asc">Oldest</option>
+						</select>
+						<div class="clear"></div>
+					</div>	
+					<div class="text">
+						<label for="accuracy">Accuracy</label>
+						<select id="accuracy">
+							<!--<option value="0">Select</option>-->
+							<option value="16">Street</option>
+							<option value="11" selected="selected">City</option>
+							<option value="6">Region</option>
+							<option value="3">Country</option>
+							<option value="1">World</option>
+						</select>
+						<div class="clear"></div>
+					</div>
+					<div class="text">
+						<label for="radius">Radius</label>
+						<input type="range" id="radius" min="1" max="30" value="5"/>
+						<span id="radius-selected">(5 km)</span>
+						<div class="clear"></div>
+					</div>
+					<div class="text">
+						<label for="nearby">Near Me</label>
+						<input type="checkbox" id="nearby"/>
+						<div class="clear"></div>
+					</div>
+					<div class="text">
+						<input type="submit" id="submit" value="Find">
+						<div class="clear"></div>
+					</div>
+					<fieldset>
+					</form>
+					<div id="info">
+						<br/><h4>Search the map or drag it around and click Find. Then click on an image below for slideshow (browse with left-right key).</h4><br/>
+						<span>* To see things fresh and keep Flickr API happy, only images taken within the last one year are shown.</span></br>
+						</br><input type="checkbox" id="nofancy" checked="checked"/> Slideshow Enabled<a href="#" id="showcall" /><button>Show API call</button></a>
+					</div>	
+				</div>
+				<div id="results">
+					<ul id="photos">
+					</ul>	
+				</div>	
+			</div>
+			<!-- Start of Woopra Code -->
+			<script type="text/javascript">
+			var woo_settings = {idle_timeout:'300000', domain:'ramjoshi.com'};
+			(function(){
+			var wsc = document.createElement('script');
+			wsc.src = document.location.protocol+'//static.woopra.com/js/woopra.js';
+			wsc.type = 'text/javascript';
+			wsc.async = true;
+			var ssc = document.getElementsByTagName('script')[0];
+			ssc.parentNode.insertBefore(wsc, ssc);
+			})();
+			</script>
+			<!-- End of Woopra Code -->		
+		</body>
+		</html>		
