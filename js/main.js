@@ -18,14 +18,15 @@ along with RangeFindr.  If not, see <http://www.gnu.org/licenses/>.
 var flickrKey = 'e76f3d43d561013be997ed83c6554190';
 
 var flickr = 'http://flickr.com/';
-var flickrApi = 'http://api.flickr.com/services/rest/';
+var flickrApi = 'https://api.flickr.com/services/rest/';
 var jsonFormat = '&format=json&jsoncallback=?';
 var showcall = ''; // Show Flickr API call
 
 var map;
 var lat;
-var lon;
+var lng;
 var zoom = 13;
+var markers = [];
 
 var spin; // Busy spinner
 
@@ -44,28 +45,30 @@ $(document).ready(function() {
 	spin = $('#fields').busy();
 	// Adjust map according to screen resolution 
 	$('#map').css({'width':0.625*screen.width, 'height':0.625*screen.height});
-	init();
 });
 
+google.maps.event.addDomListener(window, 'load', init);
 function init() {
 	$('#search').submit(function() {
 		spin = $('#search').busy();
 		showSearchedImages();
 		return false;
 	});
-	map = new GMap2($('#map').get(0));
+	map = new google.maps.Map($('#map').get(0), {
+		mapTypeId: google.maps.MapTypeId.HYBRID
+	});
 	if(navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(function(position) {	
 			lat = position.coords.latitude;
-			lon = position.coords.longitude;
-			setupMap(lat, lon);
+			lng = position.coords.longitude;
+			setupMap(lat, lng);
 			showImages('');
 		});
 	}
 	else {
 		lat = 37.871592; // berkeley
-		lon = -122.272747;
-		setupMap(lat, lon);
+		lng = -122.272747;
+		setupMap(lat, lng);
 		showImages('');
 	}
 	$('input#radius').change(function() { // Show radius selected on slider
@@ -88,13 +91,29 @@ function init() {
 	$('a#showcall').fancybox(); // Load a Fancybox
 }
 
-function setupMap(lat, lon) {
-	map.setCenter(new GLatLng(lat, lon), zoom);
-	map.setMapType(G_HYBRID_MAP);
-	map.enableRotation();
-	map.addControl(new GLargeMapControl());
-	map.addControl(new GMapTypeControl());
-	map.enableGoogleBar();
+function setupMap(lat, lng) {
+	var $control = $('#pac-input').get(0);
+	map.setCenter({lat: lat, lng: lng});
+	map.setZoom(zoom);
+	map.controls[google.maps.ControlPosition.TOP_LEFT].push($control);
+
+	var autocomplete = new google.maps.places.Autocomplete($control);
+  autocomplete.bindTo('bounds', map);
+ 	google.maps.event.addListener(autocomplete, 'place_changed', function() {
+ 		var place = autocomplete.getPlace();
+    if (!place.geometry) {
+      return;
+    }
+ 		// If the place has a geometry, then present it on a map.
+    if (place.geometry.viewport) {
+      map.fitBounds(place.geometry.viewport);
+    } else {
+      map.setCenter(place.geometry.location);
+      map.setZoom(17);  // Why 17? Because it looks good.
+    }
+    $('#nearby').attr('checked', false);
+    showSearchedImages();	
+ 	});
 }
 
 function showSearchedImages() {
@@ -130,33 +149,38 @@ function showSearchedImages() {
 	if (nearby) {
 		navigator.geolocation.getCurrentPosition(function(position) {
 			lat = position.coords.latitude;
-			lon = position.coords.longitude;
-			map.setCenter(new GLatLng(lat, lon), zoom);
+			lng = position.coords.longitude;
 			showImages(searchParams);
 		});
 	}
 	else {
-		lat = map.getCenter().y;
-		lon = map.getCenter().x;
-		map.setZoom(zoom);
+		lat = map.getCenter().lat();
+		lng = map.getCenter().lng();
 		showImages(searchParams);
 	}
+	
 }
 
 function showImages(searchParams) {
-	date = new Date();
-	min_date =  (date.getFullYear()-1) + "-" + (date.getMonth()+1) + "-" + date.getDate();
+	var bounds = new google.maps.LatLngBounds();
+	var call;
+	var date = new Date();
+	var min_date =  (date.getFullYear()-1) + "-" + (date.getMonth()+1) + "-" + date.getDate();
 
 	if(searchParams != '') {
-		call = flickrApi + '?method=flickr.photos.search&lat=' + lat + '&lon=' + lon + searchParams + '&extras=geo' + jsonFormat;
+		call = flickrApi + '?method=flickr.photos.search&lat=' + lat + '&lon=' + lng + searchParams + '&extras=geo' + jsonFormat;
 	}
 	else {
-		call = flickrApi + '?method=flickr.photos.search&lat=' + lat + '&lon=' + lon + '&sort=interestingness-desc&accuracy=11&extras=geo&min_taken_date=' + min_date + jsonFormat;
+		call = flickrApi + '?method=flickr.photos.search&lat=' + lat + '&lon=' + lng + '&sort=interestingness-desc&accuracy=11&extras=geo&min_taken_date=' + min_date + jsonFormat;
 	}
 	$('#calltext').text(call + '&api_key=[Your API Key Here]'); // Update text in #calltext
 	call = call + '&api_key=' + flickrKey;
 	$.getJSON(call, function(data) {
-		map.clearOverlays();
+		
+		for (var i = 0, marker; marker = markers[i]; i++) {
+      marker.setMap(null);
+    }
+    markers = [];
 		$('#photos').contents().remove();
 		$.each(data.photos.photo, function(i,item) {
 			var imgTitle = item.title;
@@ -164,15 +188,24 @@ function showImages(searchParams) {
 			var imgURL_s = imgURL_pre + '_s.jpg';
 			var imgLat = item.latitude;
 			var imgLon = item.longitude;
+			var position = new google.maps.LatLng(imgLat, imgLon);
+			bounds.extend(position);
 
-			var point = new GLatLng(imgLat, imgLon);
-			var marker = new GMarker(point);
-			var html = '<img class="markerimg" src="' + imgURL_s + '" /><div class="markerinfo"><span>' + imgTitle + '</span><br/><a target="_blank" href="' + flickr + item.owner + '/' + item.id + '">View image on Flickr</a><br/><a target="_blank" href="' + flickr + 'map?fLat=' + imgLat + '&fLon=' + imgLon + '&zl=1">See location on Flickr</a><br/><a target="_blank" href="http://maps.google.com/?q=' + imgLat + ',' + imgLon + '&t=h">See location on Google Maps</a></div>';
-			GEvent.addListener(marker, 'click', function() {
-				map.panTo(point);
-				marker.openInfoWindowHtml(html);
+			var marker = new google.maps.Marker({
+				map: map,
+				position: position
 			});
-			map.addOverlay(marker);
+			markers.push(marker);
+
+			var html = '<img class="markerimg" src="' + imgURL_s + '" /><div class="markerinfo"><span>' + imgTitle + '</span><br/><a target="_blank" href="' + flickr + item.owner + '/' + item.id + '">View image on Flickr</a><br/><a target="_blank" href="' + flickr + 'map?fLat=' + imgLat + '&fLon=' + imgLon + '&zl=1">See location on Flickr</a><br/><a target="_blank" href="http://maps.google.com/?q=' + imgLat + ',' + imgLon + '&t=h">See location on Google Maps</a></div>';
+			var infoWindow = new google.maps.InfoWindow({
+      	content: html
+      });
+
+			google.maps.event.addListener(marker, 'click', function() {
+				map.panTo(position);
+				infoWindow.open(map, marker);
+			});
 
 			// Add image to results
 			var imglist = $('<li class="imglist"></li>').appendTo('#photos');
@@ -182,12 +215,14 @@ function showImages(searchParams) {
 				if(!$('#nofancy').is(':checked')) {
 					$('html, body').animate({scrollTop:0}, 'fast');
 				}
-				GEvent.trigger(marker, 'click');
-				}).appendTo(link);
-			});
+				google.maps.event.trigger(marker, 'click')
+			}).appendTo(link);
+		});
 
-			loadFancybox(); // Load slideshow
-			$('#nofancy').attr('checked', 'checked');
-			spin.busy("hide"); // Disable spinner
-		});	
-	}
+		!bounds.isEmpty() && map.fitBounds(bounds);
+
+		loadFancybox(); // Load slideshow
+		$('#nofancy').attr('checked', 'checked');
+		spin.busy("hide"); // Disable spinner
+	});
+}
