@@ -17,7 +17,7 @@ along with RangeFindr.  If not, see <http://www.gnu.org/licenses/>.
 // Flickr API Application key
 var flickrKey = 'e76f3d43d561013be997ed83c6554190';
 
-var flickr = 'http://flickr.com/';
+var flickr = 'https://flickr.com/';
 var flickrApi = 'https://api.flickr.com/services/rest/';
 var jsonFormat = '&format=json&jsoncallback=?';
 var showcall = ''; // Show Flickr API call
