@@ -184,7 +184,7 @@ function showImages(searchParams) {
 		$('#photos').contents().remove();
 		$.each(data.photos.photo, function(i,item) {
 			var imgTitle = item.title;
-			var imgURL_pre = 'http://farm' + item.farm + '.static.flickr.com/' + item.server + '/' + item.id + '_' + item.secret;
+			var imgURL_pre = 'https://farm' + item.farm + '.static.flickr.com/' + item.server + '/' + item.id + '_' + item.secret;
 			var imgURL_s = imgURL_pre + '_s.jpg';
 			var imgLat = item.latitude;
 			var imgLon = item.longitude;
@@ -197,7 +197,7 @@ function showImages(searchParams) {
 			});
 			markers.push(marker);
 
-			var html = '<img class="markerimg" src="' + imgURL_s + '" /><div class="markerinfo"><span>' + imgTitle + '</span><br/><a target="_blank" href="' + flickr + item.owner + '/' + item.id + '">View image on Flickr</a><br/><a target="_blank" href="' + flickr + 'map?fLat=' + imgLat + '&fLon=' + imgLon + '&zl=1">See location on Flickr</a><br/><a target="_blank" href="http://maps.google.com/?q=' + imgLat + ',' + imgLon + '&t=h">See location on Google Maps</a></div>';
+			var html = '<img class="markerimg" src="' + imgURL_s + '" /><div class="markerinfo"><span>' + imgTitle + '</span><br/><a target="_blank" href="' + flickr + item.owner + '/' + item.id + '">View image on Flickr</a><br/><a target="_blank" href="' + flickr + 'map?fLat=' + imgLat + '&fLon=' + imgLon + '&zl=1">See location on Flickr</a><br/><a target="_blank" href="https://maps.google.com/?q=' + imgLat + ',' + imgLon + '&t=h">See location on Google Maps</a></div>';
 			var infoWindow = new google.maps.InfoWindow({
       	content: html
       });
