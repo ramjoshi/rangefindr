@@ -47,8 +47,7 @@ $(document).ready(function() {
 	$('#map').css({'width':0.625*screen.width, 'height':0.625*screen.height});
 });
 
-google.maps.event.addDomListener(window, 'load', init);
-function init() {
+function initMap() {
 	$('#search').submit(function() {
 		spin = $('#search').busy();
 		showSearchedImages();
