@@ -56,20 +56,12 @@ function initMap() {
 	map = new google.maps.Map($('#map').get(0), {
 		mapTypeId: google.maps.MapTypeId.HYBRID
 	});
-	if(navigator.geolocation) {
-		navigator.geolocation.getCurrentPosition(function(position) {	
-			lat = position.coords.latitude;
-			lng = position.coords.longitude;
-			setupMap(lat, lng);
-			showImages('');
-		});
-	}
-	else {
-		lat = 37.871592; // berkeley
-		lng = -122.272747;
-		setupMap(lat, lng);
-		showImages('');
-	}
+
+	lat = 37.871592; // berkeley
+	lng = -122.272747;
+	setupMap(lat, lng);
+	showImages('');
+
 	$('input#radius').change(function() { // Show radius selected on slider
 		$('#radius-selected').text('(' + $('#radius').val() + ' km)');
 	});
